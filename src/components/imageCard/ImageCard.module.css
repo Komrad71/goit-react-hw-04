@@ -1,48 +1,46 @@
-.contactFormWrapper {
+.imageCardContainer {
+  width: 320px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+.imageCardContainer:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.imageCardImg {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.userInfo {
+  top: 200px;
+  width: 100%;
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  gap: 16px;
-  border-radius: 10px;
-
+  padding: 10px 20px;
+  gap: 20px;
+  background-color: rgba(255, 255, 255, 0.646);
+  transition: top 250ms ease-in-out;
 }
 
-.contactFormWrapperField {
-  display: flex;
-  flex-direction: column;
-  /* align-items: center; */
-  gap: 8px;
-
+.imageCardContainer:hover .userInfo,
+.imageCardContainer:focus .userInfo {
+  top: 116px
 }
-.contactForm {
-margin: 0 auto;
-  border-radius: 8px;
-  padding: 16px;
-  width: 320px;
-  height: 60px;
-  background-color: rgb(48, 46, 46);
-  border: 1px solid black;
-
+.userName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
 }
 
-.contactForm:focus {
-  outline: none;
-  border: none;
-}
-
-.contactFormBtn {
-  border-radius: 8px;
-padding: 6px 12px;
-min-width: 150px;
-height: 40px;
-background: #c57314;
-border: none;
-color: whitesmoke;
-margin-bottom: 20px;
-}
-
-.contactFormBtn:hover {
-  background: #915700;
-
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }

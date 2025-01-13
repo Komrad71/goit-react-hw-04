@@ -1,14 +1,19 @@
-import Contact from "../contact/Contact";
-import css from './ContactList.module.css';
+import ImageCard from "../imageCard/ImageCard";
+import css from "./ImageGallery.module.css";
+import { forwardRef } from "react";
 
-const ContactList = ({ contacts, onDeleteContact }) => (
-  <ul className={css.contactList}>
-    {contacts.map(contact => (
-      <li key={contact.id} className={css.contactListItem}>
-        <Contact contact={contact} onDelete={onDeleteContact} />
-      </li>
-    ))}
-  </ul>
-);
+const ImageGallery = forwardRef(({ images, onOpenModal }, ref) => {
+  return (
+    <ul className={css.galleryContainer} ref={ref}>
+      {images.map(({ id, ...imageProps }) => (
+        <li key={id} className={css.galleryItem}>
+          <ImageCard image={imageProps} onOpenModal={onOpenModal} />
+        </li>
+      ))}
+    </ul>
+  );
+});
 
-export default ContactList;
+ImageGallery.displayName = "ImageGallery";
+
+export default ImageGallery;

@@ -1,23 +1,10 @@
-import { FaPhoneAlt } from "react-icons/fa";
-import { FaUserAlt } from "react-icons/fa";
-import css from './Contact.module.css';
-
-const Contact = ({ contact, onDelete }) => {
+import css from './ErrorMessage.module.css';
+const ErrorMessage = () => {
   return (
-    <div className={css.contact}>
-      <div className={css.contactContainer}>
-        <div className={css.contactWrapper}>
-          <FaPhoneAlt color="black" />
-          <p className={css.contactText}>{contact.name}</p>
-        </div>
-        <div className={css.contactWrapper}>
-          <FaUserAlt color="blue" />
-          <p className={css.contactText}> {contact.number}</p>
-        </div>
-      </div>
-      <button className={css.contactBtn} type="button" onClick={() => onDelete(contact.id)}>Delete</button>
-    </div>
+    <>
+      <h3 className={css.error}>Something went wrong!!! Try again</h3>
+    </>
   );
 };
 
-export default Contact;
+export default ErrorMessage;

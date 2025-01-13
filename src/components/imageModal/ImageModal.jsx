@@ -1,15 +1,27 @@
-import css from "./SearchBox.module.css";
+import Modal from "react-modal";
+import css from "./ImageModal.module.css";
 
-const SearchBox = ({ searchValue, onSearch }) => {
-	return (
-		<input
-			className={css.searchInput}
-			type="text"
-			value={searchValue}
-			onChange={(evt) => onSearch(evt.target.value)}
-			placeholder="Find contacts by name"
-		/>
-	);
+Modal.setAppElement("#root");
+
+const ImageModal = ({ image, onCloseModal, value }) => {
+  const { urls, description } = image;
+
+  return (
+    <Modal
+      isOpen={value}
+      onRequestClose={onCloseModal}
+      contentLabel="Image Modal"
+      className={css.modalContent}
+      overlayClassName={css.modalOverlay}
+    >
+      <img
+        className={css.modalImg}
+        src={urls.regular}
+        alt={description || "Image"}
+        onClick={onCloseModal}
+      />
+    </Modal>
+  );
 };
 
-export default SearchBox;
+export default ImageModal;

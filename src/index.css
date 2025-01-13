@@ -1,12 +1,4 @@
 :root {
-
-  --btn-color: rgb(255, 216, 164);
-  --btn-hover-color: rgb(253, 207, 147);
-  --btn-hover-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-  --btn-transition: box-shadow 250ms ease-in-out,
-      /* background-color 250ms ease-in-out; */
-
-
   font-family: Inter, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;

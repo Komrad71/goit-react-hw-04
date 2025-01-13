@@ -1,54 +1,130 @@
-import { useEffect, useState } from "react";
-import { nanoid } from "nanoid";
+import ImageGallery from "../imageGallery/ImageGallery";
+import SearchBar from "../searchBar/SearchBar";
+import ErrorMessage from "../errorMessage/ErrorMessage";
+import LoadMoreBtn from "../loadMoreBtn/LoadMoreBtn";
+import getImages from "../unsplash/unsplash";
+import { Toaster, toast } from "react-hot-toast";
+import { useEffect, useState, useRef } from "react";
 import css from "./App.module.css";
-import ContactForm from "../contactForm/ContactForm";
-import SearchBox from "../searchBox/SearchBox";
-import ContactList from "../contactList/ContactList";
-import initialContacts from "../contact/Contact.json";
+import ImageModal from "../imageModal/ImageModal";
+
+const errorNotify = () => toast.error("No results found");
 
 const App = () => {
-  const [searchValue, setSearchValue] = useState("");
-  const [contacts, setContacts] = useState(() => {
-    const lsContacts = window.localStorage.getItem("contacts");
+  const [images, setImages] = useState([]);
+  const [loader, setLoader] = useState(false);
+  const [error, setError] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [query, setQuery] = useState("");
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
 
-    if (lsContacts) {
-      return JSON.parse(lsContacts);
-    }
+  const galleryRef = useRef();
+  const loadMoreRef = useRef();
 
-    return initialContacts;
-  });
+  const handleOpenModal = (image) => {
+    setIsOpen(true);
+    setModalImage(image);
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+    setModalImage(null);
+  };
+
+  const handleSearch = (userQuery) => {
+    if (query === userQuery) return;
+    setImages([]);
+    setQuery(userQuery);
+    setCurrentPage(1);
+  };
+
+  const handleClickLoadMore = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
 
   useEffect(() => {
-    window.localStorage.setItem("contacts", JSON.stringify(contacts));
-  }, [contacts]);
+    if (!query) return;
 
-  const searchContacts = contacts.filter((item) =>
-    item.name.toLowerCase().includes(searchValue.toLowerCase())
+    async function fetchImages() {
+      try {
+        setError(false);
+        setLoader(true);
+        const data = await getImages(query, currentPage);
+
+        if (!data.results || data.results.length < 1) {
+          errorNotify();
+          setHasMore(false);
+          return;
+        }
+
+        setImages((prev) => [...prev, ...data.results]);
+        setHasMore(data.total_pages > currentPage);
+      } catch (error) {
+        console.error("Error fetching images:", error);
+        setError(true);
+      } finally {
+        setLoader(false);
+      }
+    }
+
+    fetchImages();
+  }, [query, currentPage]);
+
+  useEffect(() => {
+    if (images.length > 0 && hasMore) {
+      loadMoreRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else if (!hasMore) {
+      galleryRef.current?.scrollIntoView({
+        block: "end",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [images, hasMore, currentPage]);
+
+  const CustomLoader = () => (
+    <div className={css.progressBarContainer}>
+      <div className={css.progressBar}></div>
+    </div>
   );
 
-  const handleAddContact = (contact) => {
-    const newContact = { ...contact, id: nanoid() };  // Генерация ID здесь
-    setContacts((prev) => [...prev, newContact]);
-  };
-
-  const handleSearchContact = (value) => {
-    setSearchValue(value);
-  };
-
-  const handleDeleteContact = (contactId) => {
-    setContacts((prev) => prev.filter((contact) => contact.id !== contactId));
-  };
-
   return (
-    <section className={css.container}>
-      <h1 className={css.title}>Phonebook</h1>
-      <ContactForm onAddContact={handleAddContact} />
-      <SearchBox searchValue={searchValue} onSearch={handleSearchContact} />
-      <ContactList
-        contacts={searchContacts}
-        onDeleteContact={handleDeleteContact}
-      />
-    </section>
+    <>
+      <Toaster position="top-right" reverseOrder={false} />
+      <header className={css.header}>
+        <SearchBar onSearch={handleSearch} />
+      </header>
+      <main className={css.main}>
+        {error && <ErrorMessage />}
+        {images && (
+          <ImageGallery
+            images={images}
+            onOpenModal={handleOpenModal}
+            ref={galleryRef}
+          />
+        )}
+        {modalImage && (
+          <ImageModal
+            value={modalIsOpen}
+            onCloseModal={handleCloseModal}
+            image={modalImage}
+          />
+        )}
+        {loader && (
+          <div className={css.loaderContainer}>
+            <CustomLoader />
+          </div>
+        )}
+        {hasMore && (
+          <LoadMoreBtn
+            onClick={handleClickLoadMore}
+            ref={loadMoreRef}
+          />
+        )}
+      </main>
+    </>
   );
 };
 
